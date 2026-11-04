@@ -1,5 +1,7 @@
 # myrun
 
+> 📘 **Case study:** [raqueeb.dev/projects/myrun](https://raqueeb.dev/projects/myrun) — architecture, stack and implementation notes.
+
 A container runtime for Linux, written in Rust with **no external crates** —
 every syscall, every netlink message, and the JSON and TOML parsers are
 hand-written against the kernel ABI.
