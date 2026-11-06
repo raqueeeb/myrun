@@ -39,6 +39,23 @@ jobs:
       - name: CLI integration tests (unprivileged)
         run: cargo test --test cli --verbose
 
+  msrv:
+    name: Minimum supported Rust version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Cargo.toml claimed 1.70 while the code had moved on to APIs that are
+      # stable only from 1.74. Nothing checked the claim, so nothing noticed.
+      # This job keeps it honest.
+      - name: Install Rust
+        run: |
+          rustup toolchain install 1.75 --profile minimal
+          rustup default 1.75
+
+      - name: Build on the declared minimum
+        run: cargo build --all-targets
+
   privileged:
     name: Privileged container tests
     runs-on: ubuntu-latest
