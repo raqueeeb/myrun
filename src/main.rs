@@ -542,7 +542,7 @@ fn cmd_stats(ids: &[String], json: bool, follow: bool, interval_ms: u64) -> Resu
         if json {
             println!(
                 "{}",
-                Json::Arr(current.iter().map(|s| s.to_json()).collect()).to_string()
+                Json::Arr(current.iter().map(|s| s.to_json()).collect())
             );
         } else {
             // Clear the screen so `stats -f` behaves like `top`.

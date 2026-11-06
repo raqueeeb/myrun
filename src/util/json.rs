@@ -111,7 +111,13 @@ impl Json {
         Json::Arr(it.into_iter().map(|s| Json::Str(s.into())).collect())
     }
 
-    pub fn to_string(&self) -> String {
+    /// Compact JSON, on one line.
+    ///
+    /// This is [`Display`](std::fmt::Display), so `to_string()` comes from
+    /// the blanket `ToString` implementation and every existing caller keeps
+    /// working. An inherent `to_string` would shadow that and surprise
+    /// anyone formatting a `Json` with `{}`.
+    pub fn to_compact_string(&self) -> String {
         let mut s = String::new();
         self.write(&mut s, None, 0);
         s
@@ -185,6 +191,13 @@ impl Json {
                 out.push('}');
             }
         }
+    }
+}
+
+impl std::fmt::Display for Json {
+    /// Compact JSON, so `format!("{json}")` and `json.to_string()` agree.
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.to_compact_string())
     }
 }
 
