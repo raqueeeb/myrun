@@ -206,15 +206,9 @@ pub const SFD_NONBLOCK: c_int = 0o4000;
 
 /// glibc `sigset_t` is 1024 bits regardless of what the kernel uses.
 #[repr(C)]
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Default)]
 pub struct SigSet {
     pub bits: [u64; 16],
-}
-
-impl Default for SigSet {
-    fn default() -> Self {
-        SigSet { bits: [0; 16] }
-    }
 }
 
 impl SigSet {

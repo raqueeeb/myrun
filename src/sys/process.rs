@@ -488,11 +488,8 @@ pub fn wait_pid(pid: pid_t, options: c_int) -> Result<Option<(pid_t, ExitStatus)
 /// Reap every finished child.  Returns the statuses collected.
 pub fn reap_all() -> Vec<(pid_t, ExitStatus)> {
     let mut out = Vec::new();
-    loop {
-        match wait_pid(-1, WNOHANG) {
-            Ok(Some(x)) => out.push(x),
-            _ => break,
-        }
+    while let Ok(Some(x)) = wait_pid(-1, WNOHANG) {
+        out.push(x);
     }
     out
 }

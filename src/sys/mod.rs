@@ -78,7 +78,7 @@ pub fn is_root() -> bool {
 
 pub fn setsid() -> Result<i32> {
     let rc = unsafe { ffi::setsid() };
-    chk(rc, "setsid", "").map(|v| v as i32)
+    chk(rc, "setsid", "")
 }
 
 pub fn clock_ticks_per_sec() -> u64 {
