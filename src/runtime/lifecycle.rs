@@ -338,10 +338,12 @@ mod tests {
     }
 
     fn created(store: &Store, name: &str) -> ContainerState {
-        let mut c = ContainerConfig::default();
-        c.rootfs = "/tmp".into();
-        c.command = vec!["/bin/true".into()];
-        c.name = Some(name.to_string());
+        let mut c = ContainerConfig {
+            rootfs: "/tmp".into(),
+            command: vec!["/bin/true".into()],
+            name: Some(name.to_string()),
+            ..Default::default()
+        };
         c.network.mode = crate::config::NetworkMode::None;
         c.finalize_and_validate(true).unwrap();
         let mut st = ContainerState::new(c);

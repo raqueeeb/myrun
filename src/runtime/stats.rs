@@ -210,10 +210,12 @@ mod tests {
     use super::*;
 
     fn sample() -> Stats {
-        let mut s = Stats::default();
-        s.id = "abcdef0123456789".into();
-        s.status = "running".into();
-        s.uptime_ms = 10_000;
+        let mut s = Stats {
+            id: "abcdef0123456789".into(),
+            status: "running".into(),
+            uptime_ms: 10_000,
+            ..Default::default()
+        };
         s.cgroup.cpu_usage_usec = Some(5_000_000); // 5s of CPU in 10s
         s.cgroup.memory_current = Some(50 * 1024 * 1024);
         s.cgroup.memory_max = Some(200 * 1024 * 1024);

@@ -413,9 +413,11 @@ mod tests {
     }
 
     fn cfg() -> ContainerConfig {
-        let mut c = ContainerConfig::default();
-        c.rootfs = "/tmp".into();
-        c.command = vec!["/bin/true".into()];
+        let mut c = ContainerConfig {
+            rootfs: "/tmp".into(),
+            command: vec!["/bin/true".into()],
+            ..Default::default()
+        };
         c.network.mode = crate::config::NetworkMode::None;
         c.finalize_and_validate(true).unwrap();
         c

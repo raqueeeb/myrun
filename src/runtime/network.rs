@@ -291,9 +291,11 @@ mod tests {
 
     #[test]
     fn host_and_none_modes_do_no_work() {
-        let mut cfg = ContainerConfig::default();
-        cfg.rootfs = "/tmp".into();
-        cfg.command = vec!["/bin/true".into()];
+        let mut cfg = ContainerConfig {
+            rootfs: "/tmp".into(),
+            command: vec!["/bin/true".into()],
+            ..Default::default()
+        };
         cfg.network.mode = NetworkMode::None;
         cfg.finalize_and_validate(true).unwrap();
         let mut rb = Rollback::new();
@@ -308,7 +310,7 @@ mod tests {
         // Pure name arithmetic; does not need a live interface.
         let id = "0011223344556677";
         let (host, _) = veth_names(id);
-        let live = vec![id.to_string()];
+        let live = [id.to_string()];
         let expected: Vec<String> = live.iter().map(|i| veth_names(i).0).collect();
         assert!(expected.contains(&host));
     }

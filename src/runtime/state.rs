@@ -242,10 +242,8 @@ impl ContainerState {
                     self.started_at = now_ms();
                 }
             }
-            Status::Stopped => {
-                if self.finished_at == 0 {
-                    self.finished_at = now_ms();
-                }
+            Status::Stopped if self.finished_at == 0 => {
+                self.finished_at = now_ms();
             }
             _ => {}
         }
@@ -621,10 +619,12 @@ mod tests {
     }
 
     fn sample_config(id: &str) -> ContainerConfig {
-        let mut c = ContainerConfig::default();
-        c.id = id.to_string();
-        c.rootfs = PathBuf::from("/tmp");
-        c.command = vec!["/bin/true".into()];
+        let mut c = ContainerConfig {
+            id: id.to_string(),
+            rootfs: PathBuf::from("/tmp"),
+            command: vec!["/bin/true".into()],
+            ..Default::default()
+        };
         c.finalize_and_validate(false).unwrap();
         c
     }

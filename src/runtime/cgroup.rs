@@ -504,9 +504,11 @@ mod tests {
     #[test]
     fn swap_limit_is_converted_to_v2_semantics() {
         // v1 memsw = memory + swap; v2 memory.swap.max is swap alone.
-        let mut r = Resources::default();
-        r.memory = Some(100 * 1024 * 1024);
-        r.memory_swap = Some(150 * 1024 * 1024);
+        let r = Resources {
+            memory: Some(100 * 1024 * 1024),
+            memory_swap: Some(150 * 1024 * 1024),
+            ..Default::default()
+        };
         let dir = std::env::temp_dir().join(format!("myrun-cgswap-{}", std::process::id()));
         let _ = std::fs::create_dir_all(&dir);
         for f in ["memory.max", "memory.swap.max"] {

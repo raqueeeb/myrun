@@ -146,8 +146,10 @@ mod tests {
 
     #[test]
     fn privileged_skips_everything() {
-        let mut sec = SecurityConfig::default();
-        sec.privileged = true;
+        let sec = SecurityConfig {
+            privileged: true,
+            ..Default::default()
+        };
         assert!(verify(&sec).is_empty());
         assert!(summary(&sec).contains("privileged"));
     }
@@ -156,9 +158,11 @@ mod tests {
     fn no_new_privs_false_with_seccomp_is_rejected() {
         // precheck() rather than apply(): apply() would drop this test
         // process's own capabilities as a side effect.
-        let mut sec = SecurityConfig::default();
-        sec.no_new_privs = false;
-        sec.seccomp = SeccompMode::Default;
+        let mut sec = SecurityConfig {
+            no_new_privs: false,
+            seccomp: SeccompMode::Default,
+            ..Default::default()
+        };
         let err = match precheck(&sec) {
             Err(e) => e.to_string(),
             Ok(()) => panic!("precheck should have rejected this combination"),
@@ -170,8 +174,10 @@ mod tests {
         precheck(&sec).unwrap();
 
         // Unknown capability names are caught here too.
-        let mut bad = SecurityConfig::default();
-        bad.cap_add = vec!["CAP_MADE_UP".into()];
+        let bad = SecurityConfig {
+            cap_add: vec!["CAP_MADE_UP".into()],
+            ..Default::default()
+        };
         assert!(precheck(&bad).is_err());
     }
 
@@ -186,17 +192,21 @@ mod tests {
 
     #[test]
     fn dropping_all_capabilities_is_representable() {
-        let mut sec = SecurityConfig::default();
-        sec.cap_drop = vec!["all".into()];
+        let sec = SecurityConfig {
+            cap_drop: vec!["all".into()],
+            ..Default::default()
+        };
         assert_eq!(sec.cap_mask().unwrap(), 0);
         assert!(summary(&sec).starts_with("0 capabilities"));
     }
 
     #[test]
     fn user_switch_requires_setuid_capability() {
-        let mut sec = SecurityConfig::default();
-        sec.cap_drop = vec!["all".into()];
-        sec.user = Some((1000, 1000));
+        let sec = SecurityConfig {
+            cap_drop: vec!["all".into()],
+            user: Some((1000, 1000)),
+            ..Default::default()
+        };
         let mask = sec.cap_mask().unwrap();
         let setuid = 1u64 << crate::sys::caps::parse_cap("SETUID").unwrap();
         let setgid = 1u64 << crate::sys::caps::parse_cap("SETGID").unwrap();
