@@ -273,10 +273,8 @@ fn parse_number(s: &str) -> Result<Json> {
         Some(i64::from_str_radix(h, 16))
     } else if let Some(o) = body.strip_prefix("0o") {
         Some(i64::from_str_radix(o, 8))
-    } else if let Some(bn) = body.strip_prefix("0b") {
-        Some(i64::from_str_radix(bn, 2))
     } else {
-        None
+        body.strip_prefix("0b").map(|bn| i64::from_str_radix(bn, 2))
     };
     if let Some(r) = radix_parsed {
         return r
