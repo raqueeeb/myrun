@@ -214,19 +214,22 @@ fn build_state(mut cfg: ContainerConfig, detach: bool) -> Result<ContainerState>
 }
 
 fn cmd_create(args: cli::RunArgs) -> Result<i32> {
+    // Validate before asking for privileges. A typo in a path or an
+    // impossible memory limit is worth reporting on the first run, not after
+    // the user has gone away and come back with sudo.
+    let st = build_state(args.config, args.detach)?;
     require_root("creating a container")?;
     let store = store()?;
-    let st = build_state(args.config, args.detach)?;
     let st = supervisor::create(&store, st)?;
     println!("{}", st.id);
     Ok(0)
 }
 
 fn cmd_run(args: cli::RunArgs) -> Result<i32> {
-    require_root("running a container")?;
-    let store = store()?;
     let detach = args.detach;
     let st = build_state(args.config, detach)?;
+    require_root("running a container")?;
+    let store = store()?;
     let st = supervisor::create(&store, st)?;
 
     if detach {
