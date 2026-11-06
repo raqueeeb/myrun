@@ -185,7 +185,7 @@ impl MountSpec {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct Resources {
     /// `memory.max`, bytes.
     pub memory: Option<u64>,
@@ -197,18 +197,6 @@ pub struct Resources {
     pub cpu_weight: Option<u64>,
     /// `pids.max`.
     pub pids: Option<u64>,
-}
-
-impl Default for Resources {
-    fn default() -> Self {
-        Resources {
-            memory: None,
-            memory_swap: None,
-            cpus: None,
-            cpu_weight: None,
-            pids: None,
-        }
-    }
 }
 
 impl Resources {
@@ -1009,10 +997,11 @@ mod tests {
     use super::*;
 
     fn base() -> ContainerConfig {
-        let mut c = ContainerConfig::default();
-        c.rootfs = PathBuf::from("/tmp");
-        c.command = vec!["/bin/sh".into()];
-        c
+        ContainerConfig {
+            rootfs: PathBuf::from("/tmp"),
+            command: vec!["/bin/sh".into()],
+            ..Default::default()
+        }
     }
 
     #[test]
@@ -1048,8 +1037,10 @@ mod tests {
 
     #[test]
     fn cpu_max_encoding() {
-        let mut r = Resources::default();
-        r.cpus = Some(1.0);
+        let mut r = Resources {
+            cpus: Some(1.0),
+            ..Default::default()
+        };
         assert_eq!(r.cpu_max_value().unwrap(), "100000 100000");
         r.cpus = Some(0.5);
         assert_eq!(r.cpu_max_value().unwrap(), "50000 100000");
@@ -1061,8 +1052,10 @@ mod tests {
     fn gateway_defaults_to_first_host_address() {
         let n = NetworkConfig::default();
         assert_eq!(n.gateway_addr().unwrap(), [10, 87, 0, 1]);
-        let mut n2 = NetworkConfig::default();
-        n2.subnet = "192.168.44.0/24".into();
+        let mut n2 = NetworkConfig {
+            subnet: "192.168.44.0/24".into(),
+            ..Default::default()
+        };
         assert_eq!(n2.gateway_addr().unwrap(), [192, 168, 44, 1]);
         n2.gateway = Some("192.168.44.254".into());
         assert_eq!(n2.gateway_addr().unwrap(), [192, 168, 44, 254]);
@@ -1074,8 +1067,10 @@ mod tests {
         let all = Namespaces::default().clone_flags();
         assert!(all & CLONE_NEWPID != 0);
         assert!(all & CLONE_NEWNET != 0);
-        let mut n = Namespaces::default();
-        n.net = false;
+        let n = Namespaces {
+            net: false,
+            ..Default::default()
+        };
         assert!(n.clone_flags() & CLONE_NEWNET == 0);
         assert!(n.clone_flags() & CLONE_NEWNS != 0);
     }
